@@ -1,14 +1,19 @@
 package com.jobsfinder.jobsfinder.model;
 
 
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name="jobs")
@@ -32,6 +37,12 @@ public class Jobs {
 	@ManyToOne
 	@JoinColumn
 	private Company company;
+	
+	
+	
+	@JsonManagedReference
+	@OneToMany(mappedBy = "jobs" , cascade = CascadeType.ALL)
+	private List<Enrolled> enrolled;
 	
 	public int getId() {
 		return id;
@@ -73,8 +84,17 @@ public class Jobs {
 	public void setCategory(Category category) {
 		this.category = category;
 	}
-	
-	
-	
+	public Company getCompany() {
+		return company;
+	}
+	public void setCompany(Company company) {
+		this.company = company;
+	}
+	public List<Enrolled> getEnrolled() {
+		return enrolled;
+	}
+	public void setEnrolled(List<Enrolled> enrolled) {
+		this.enrolled = enrolled;
+	}
 	
 }

@@ -27,8 +27,8 @@ public interface JobsRepository extends JpaRepository<Jobs, Integer>{
 	@Query("select j.title from Jobs j , Company c where j.id = c.id and c.name = :name")
 	List<String> searchByCompnayName(@Param(value = "name") String name);
 	
-	 @Transactional
-	 @Modifying
-	 @Query("UPDATE Jobs j SET j.title = :title , j.craeted_at =:createdAt, j.description=:description, j.deadline = :deadline  WHERE j.id = :id_j")
-	 void update (@Param("title") String title,@Param("createdAt") String createdAt,@Param("deadline") String deadline,@Param("description") String description,@Param("id_j") int id_j);
+	@Modifying
+	@Transactional
+	@Query("update Jobs j Set j.created_at = :created_at , j.deadline = :deadline , j.description = :description , j.title = :title where j.id = :id ")
+	void updateJob(@Param("created_at") String created_at ,@Param("deadline") String deadline, @Param("description") String description,@Param("title") String title, @Param("id") int id  );
 }
