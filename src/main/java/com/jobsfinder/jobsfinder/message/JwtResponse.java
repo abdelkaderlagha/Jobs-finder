@@ -1,5 +1,5 @@
 package com.jobsfinder.jobsfinder.message;
-public class JwtResponse {//apres authentification //bech traja3 el token 
+public class JwtResponse {
     private String token;
     private String type = "Bearer";
  

@@ -1,7 +1,5 @@
 package com.jobsfinder.jobsfinder.model;
 
-
-
 import java.util.HashSet;
 import java.util.Set;
  
@@ -20,13 +18,10 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
  
 import org.hibernate.annotations.NaturalId;
-
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-@JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class)
+ 
 @Entity
 @Table(name = "users", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {//username est unique meme aussi pour le mail
+        @UniqueConstraint(columnNames = {
             "username"
         }),
         @UniqueConstraint(columnNames = {
@@ -34,22 +29,22 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
         })
 })
 public class User{
-  @Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
  
-    @NotBlank//non vide
+    @NotBlank
     @Size(min=3, max = 50)
     private String name;
- 
+
+    @NaturalId
     @NotBlank
     @Size(min=3, max = 50)
     private String username;
- 
-    @NaturalId//identification mte3i
+
     @NotBlank
     @Size(max = 50)
-    @Email//email
+    @Email
     private String email;
  
     @NotBlank
@@ -59,8 +54,9 @@ public class User{
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles", 
       joinColumns = @JoinColumn(name = "user_id"), 
-      inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles = new HashSet<>();//un utilisateur a plusieurs role soit un admin ou simpla role 
+      inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles = new HashSet<>();
  
     public User() {}
  

@@ -21,6 +21,7 @@ public class Company {
 	
 	private String name;
 	private String local;
+	private String image;
 	
 	@JsonManagedReference
 	@OneToMany(mappedBy = "company" , cascade = CascadeType.ALL)
@@ -43,6 +44,19 @@ public class Company {
 	}
 	public void setLocal(String local) {
 		this.local = local;
+	}
+	
+	public String getImage() {
+		return image;
+	}
+	public void setImage(String image) {
+		this.image = image;
+	}
+	public List<Jobs> getJobs() {
+		return jobs;
+	}
+	public void setJobs(List<Jobs> jobs) {
+		this.jobs = jobs;
 	}
 	public Company() {
 		super();

@@ -1,23 +1,23 @@
 package com.jobsfinder.jobsfinder.dao;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jobsfinder.jobsfinder.model.User;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
  
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
  
-public class UserPrinciple implements UserDetails {//feha tous les infos mta3 user //tchargi natural id//tnajem t7ot les donnes el kol
-  private static final long serialVersionUID = 1L;//feha les infos securise mta3 el utilisateur 
+public class UserPrinciple implements UserDetails {
+  private static final long serialVersionUID = 1L;
  
   private Long id;
- //user details feha les infos el kol 
+ 
     private String name;
  
     private String username;
@@ -27,7 +27,7 @@ public class UserPrinciple implements UserDetails {//feha tous les infos mta3 us
     @JsonIgnore
     private String password;
  
-    private Collection<? extends GrantedAuthority> authorities;//authorisation mta3 el user
+    private Collection<? extends GrantedAuthority> authorities;
  
     public UserPrinciple(Long id, String name, 
               String username, String email, String password, 

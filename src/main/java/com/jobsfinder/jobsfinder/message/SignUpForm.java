@@ -1,7 +1,6 @@
 package com.jobsfinder.jobsfinder.message;
 
 import java.util.Set;
-
 import javax.validation.constraints.*;
  
 public class SignUpForm {
@@ -16,7 +15,7 @@ public class SignUpForm {
     @NotBlank
     @Size(max = 60)
     @Email
-    private String email;//t3abi table roles users role-pm 
+    private String email;
     
     private Set<String> role;
     

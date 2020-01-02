@@ -1,5 +1,6 @@
 package com.jobsfinder.jobsfinder.configuration;
 
+
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +13,7 @@ import com.jobsfinder.jobsfinder.dao.UserPrinciple;
 import java.util.Date;
  
 @Component
-public class JwtProvider {//gener jwt token valider jwt et parser username from jwt ma3neha bech yejbed el username mel web token
+public class JwtProvider {
  
     private static final Logger logger = LoggerFactory.getLogger(JwtProvider.class);
  
@@ -22,7 +23,7 @@ public class JwtProvider {//gener jwt token valider jwt et parser username from 
     @Value("${grokonez.app.jwtExpiration}")
     private int jwtExpiration;
  
-    public String generateJwtToken(Authentication authentication) {//ygeneri web token mte3ek ygibou
+    public String generateJwtToken(Authentication authentication) {
  
         UserPrinciple userPrincipal = (UserPrinciple) authentication.getPrincipal();
  
@@ -34,19 +35,19 @@ public class JwtProvider {//gener jwt token valider jwt et parser username from 
                     .compact();
     }
  
-    public String getUserNameFromJwtToken(String token) {//bech tgib el user name mel jwt 
+    public String getUserNameFromJwtToken(String token) {
         return Jwts.parser()
                       .setSigningKey(jwtSecret)
                       .parseClaimsJws(token)
                       .getBody().getSubject();
     }
  
-    public boolean validateJwtToken(String authToken) {//validation el jwt
+    public boolean validateJwtToken(String authToken) {
         try {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
             return true;
         } catch (SignatureException e) {
-            logger.error("Invalid JWT signature -> Message: {} ", e);//ygeneri el web token mte3ek 
+            logger.error("Invalid JWT signature -> Message: {} ", e);
         } catch (MalformedJwtException e) {
             logger.error("Invalid JWT token -> Message: {}", e);
         } catch (ExpiredJwtException e) {

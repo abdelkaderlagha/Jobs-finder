@@ -16,18 +16,18 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.jobsfinder.jobsfinder.dao.UserDetailsServiceImpl;
 
- 
-@Configuration//classe config 
-@EnableWebSecurity//activer partie securite fel projet
-@EnableGlobalMethodSecurity(//tactivi les methodes mta3 el spring security
+
+@Configuration
+@EnableWebSecurity
+@EnableGlobalMethodSecurity(
     prePostEnabled = true
 )
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {//teb3a jar spring security
-    @Autowired//injection des dependances
-    UserDetailsServiceImpl userDetailsService;//a7na 3malneha
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+    @Autowired
+    UserDetailsServiceImpl userDetailsService;
  
     @Autowired
-    private JwtAuthEntryPoint unauthorizedHandler;//definie fi spring security
+    private JwtAuthEntryPoint unauthorizedHandler;
  
     @Bean
     public JwtAuthTokenFilter authenticationJwtTokenFilter() {
@@ -35,31 +35,31 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {//teb3a jar
     }
  
     @Override
-    public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {//tgofiguri el authetification
+    public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
         authenticationManagerBuilder
-                .userDetailsService(userDetailsService)//tgib les details mta3 el user
-                .passwordEncoder(passwordEncoder());//tcrytpti el mdp
+                .userDetailsService(userDetailsService)
+                .passwordEncoder(passwordEncoder());
     }
  
     @Bean
     @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {//authentification
+    public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
  
     @Bean
-    public PasswordEncoder passwordEncoder() {//traja3 mdp crypte
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
     
     @Override
-    protected void configure(HttpSecurity http) throws Exception {//
+    protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable().
-                authorizeRequests()//tactivi el api eli 3andek el 7a9 t7elhom
-                .antMatchers("/api/auth/**").permitAll()//tnajem t7el les api ken eli yebdew bel api/auth sinon itha t7eb kolchy **
-                .anyRequest().authenticated()//ay req bel forma atheka w ykoun authentifier
+                authorizeRequests()
+                .antMatchers("/api/auth/**").permitAll()
+                .anyRequest().authenticated()
                 .and()
-                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()//gener les exceptions
+                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);

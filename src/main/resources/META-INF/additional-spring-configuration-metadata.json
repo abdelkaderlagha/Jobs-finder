@@ -1,0 +1,13 @@
+{
+  "properties": [
+    {
+      "name": "grokonez.app.jwtExpiration",
+      "type": "java.lang.String",
+      "description": "Description for grokonez.app.jwtExpiration."
+    },
+    {
+      "name": "grokonez.app.jwtSecret",
+      "type": "java.lang.String",
+      "description": "Description for grokonez.app.jwtSecret."
+    }
+  ] }

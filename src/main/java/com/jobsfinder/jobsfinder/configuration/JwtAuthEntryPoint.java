@@ -13,7 +13,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
  
 @Component
-public class JwtAuthEntryPoint implements AuthenticationEntryPoint {//ygenri les exceptions itha enti user w halit les fonctionnallite mta3 admin y9olek unauthorized
+public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
  
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthEntryPoint.class);
     
