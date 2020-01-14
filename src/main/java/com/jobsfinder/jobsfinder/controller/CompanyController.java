@@ -1,79 +1,78 @@
 package com.jobsfinder.jobsfinder.controller;
-
-import java.net.URI;
 import java.util.List;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.jobsfinder.jobsfinder.dao.CompanyRepository;
-
 import com.jobsfinder.jobsfinder.model.Company;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Api(description = "Company management")
 @RestController
+@Api(description = "Company management")
+@RequestMapping(value="/rest/api")
+@CrossOrigin(origins = "http://localhost:4200")
 public class CompanyController {
 	
 	@Autowired
 	private CompanyRepository companyrepo;
 	
-	@ApiOperation("Show all company")
-	@GetMapping(value = "/api/auth/company")
-	
-	List<Company>ShowAllCompanies(){
+	@ApiOperation("Find all companies")
+	@GetMapping(value = "/company")
+	List<Company>findAllCompanies(){
 		return companyrepo.findAll();
 	}
 	
-	@ApiOperation("Show company by id")
-	@GetMapping(value="/api/auth/company/{id}")
-	
-	Company ShowCompnayById(@PathVariable int id) {
-		return companyrepo.findById(id);
+	@ApiOperation("Find companies by id")
+	@GetMapping(value = "/company/{id}")
+	public ResponseEntity<Company>findCompanyById(@Valid @PathVariable int id)throws Exception{
+		Company c = companyrepo.findById(id).orElseThrow(()-> new Exception("company 404"));
+		return ResponseEntity.ok().body(c);
 	}
 	
-	@ApiOperation("Delete all companies")
-	@DeleteMapping(value = "/api/auth/company")
-	
-	void deleteAllCategories() {
-		companyrepo.deleteAll();
-	}
-	
-	@ApiOperation("Delete company by id")
-	@DeleteMapping(value = "/api/auth/company/{id}")
-	
-	Company deleteCompanyById(@PathVariable int id) {
-		return companyrepo.deleteById(id);
-	}
 	@ApiOperation("Add new company")
-	@PostMapping(value="/api/auth/company")
-	 
-	public ResponseEntity<Void>  AddNewCompany(@Valid @RequestBody Company company){
+	@PostMapping(value = "/company")
+	@PreAuthorize("hasRole('ROLE_ADMIN')and hasRole('ROLE_PM')")
+	public @Valid Company addNewCompany(@Valid @RequestBody Company c){
+		return companyrepo.save(c);
+	}
+	
+	@ApiOperation("Delete company by ID")
+	@PreAuthorize("hasRole('ROLE_ADMIN')and hasRole('ROLE_PM')")
+	@DeleteMapping(value = "/company")
+	public String DeleteComany(@Valid @PathVariable int id)throws Exception {
+		Company c = companyrepo.findById(id).orElseThrow(()->new Exception("Company 404"));
+		companyrepo.delete(c);
+		return "Company deleted!";
+	}
+	
+	@ApiOperation("Update company by id")
+	@PutMapping(value = "/company/{id}")
+	@PreAuthorize("hasRole('ROLE_ADMIN')and hasRole('ROLE_PM')")
+	public ResponseEntity<Company>updateCompany(@Valid @PathVariable int id, @RequestBody Company newC) throws Exception{
+		Company c = companyrepo.findById(id).orElseThrow(()->new Exception("company 404"));
+		c.setImage(newC.getImage());
+		c.setLocal(newC.getLocal());
+		c.setName(newC.getName());
 		
-		Company savedCompany = companyrepo.save(company);
-
-		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-				.buildAndExpand(savedCompany.getId()).toUri();
-
-		return ResponseEntity.created(location).build();
+		Company updatedC = companyrepo.save(c);
+		return ResponseEntity.ok(updatedC);
 	}
-	@ApiOperation("Update company")
-	@PostMapping(value = "/api/auth/company/update/{id}")
-	 
-	void updateCategory(@PathVariable String name , @PathVariable String local) {
-		companyrepo.updateCompany(name, local);
-	}
-
+	
+	
+	
 }

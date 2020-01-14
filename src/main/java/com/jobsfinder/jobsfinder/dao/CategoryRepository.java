@@ -13,14 +13,5 @@ import com.jobsfinder.jobsfinder.model.Category;
 
 public interface CategoryRepository  extends JpaRepository<Category, Integer>{
 
-	void deleteAll();
-	List<Category>findAll();
-	Category findById(int id);
-	Category deleteById(int id);
-	
-	@Transactional
-	@Modifying
-	@Query(" update Category ca Set ca.category= :category")
-	void updateCategory(@Param("category") String category) ;	
 	
 }

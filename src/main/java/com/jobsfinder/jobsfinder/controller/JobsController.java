@@ -7,12 +7,14 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -21,69 +23,58 @@ import com.jobsfinder.jobsfinder.model.Jobs;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-@Api(description = "Jobs management")
 @RestController
+@Api(description = "Jobs management")
+@RequestMapping(value="/rest/api")
+@CrossOrigin(origins = "http://localhost:4200")
 public class JobsController {
 
 	@Autowired
 	private JobsRepository jobrepo ;
 	
-	
-	@ApiOperation("Show All jobs")
-	@GetMapping(value = "/api/auth/jobs")
-	
-	public List<Jobs>ShowAllJobs(){
+	@ApiOperation("Show all jobs")
+	@GetMapping(value = "/jobs")
+	List<Jobs>showAllJobs(){
 		return jobrepo.findAll();
 	}
 	
-	@ApiOperation("Show job by id {id}")
-	@GetMapping(value="/api/auth/jobs/{id}")
-	public Jobs ShowJobById(@PathVariable int id){
-		return jobrepo.findById(id);
+	@ApiOperation("Show jobs by id")
+	@GetMapping(value = "/jobs/{id}")
+	public ResponseEntity<Jobs>ShowJobsById(@Valid @PathVariable int id) throws Exception{
+		Jobs job= jobrepo.findById(id).orElseThrow(()-> new Exception("Jobs 404"));
+		return ResponseEntity.ok().body(job);
 	}
 	
 	@ApiOperation("Add new job")
-	@PostMapping(value="/api/auth/jobs")
-	public ResponseEntity<Void>  AddNewJob(@Valid @RequestBody Jobs job){
+	@PreAuthorize("hasRole('ROLE_ADMIN')and hasRole('ROLE_PM')")
+	@PostMapping(value = "/jobs")
+	Jobs addNewJob(@Valid @RequestBody Jobs job) {
+		return jobrepo.save(job);
+	}
+	
+	@ApiOperation("Update job")
+	@PreAuthorize("hasRole('ROLE_ADMIN')and HasRole('ROLE_PM') ")
+	@PostMapping(value = "/jobs/{id}")
+	public ResponseEntity<Jobs> updateJob(@Valid @PathVariable int id , @RequestBody Jobs newJ) throws Exception{
+		Jobs j = jobrepo.findById(id).orElseThrow(()-> new Exception("Jobs 404"));
+		j.setCategory(newJ.getCategory());
+		j.setCompany(newJ.getCompany());
+		j.setCreated_at(newJ.getCreated_at());
+		j.setDeadline(newJ.getDeadline());
+		j.setDescription(newJ.getDescription());
+		j.setTitle(newJ.getTitle());
 		
-		Jobs savedJob = jobrepo.save(job);
-
-		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-				.buildAndExpand(savedJob.getId()).toUri();
-
-		return ResponseEntity.created(location).build();
+		Jobs updatedJob = jobrepo.save(j);
+		return ResponseEntity.ok(updatedJob);
 	}
 	
-	@ApiOperation("Delete all jobs")
-	@DeleteMapping(value="/api/auth/jobs")
-	public void deleteAllJobs() {
-		jobrepo.deleteAll();
+	@ApiOperation("Delete job")
+	@PreAuthorize("hasRole('ROLE_ADMIN')and HasRole('ROLE_PM') ")
+	@DeleteMapping(value = "/jobs/{id}")
+	public String deleteJob(@Valid @PathVariable int id) throws Exception{
+		Jobs j = jobrepo.findById(id).orElseThrow(()-> new Exception("Jobs 404"));
+		jobrepo.delete(j);
+		return "Job deleted!";
 	}
 	
-	@ApiOperation("Delete job by id")
-	@DeleteMapping(value="/api/auth/jobs/{id}")
-	public Jobs deleteJobById(@PathVariable int id) {
-		return jobrepo.deleteById(id);
 	}
-	@ApiOperation("Search job by category")
-	@GetMapping(value = "/api/auth/jobsByName/category/{name}")
-	
-	List<String> SearchJoinByCategory(@PathVariable String name){
-		return jobrepo.searchByCategory(name);
-	}
-
-	@ApiOperation("Search job by name")
-	@GetMapping(value = "/api/auth/jobsByName/company/{name}")
-
-	List<String> SearchJoinByCompany(@PathVariable String name){
-		return jobrepo.searchByCompnayName(name);
-	}
-	
-	@ApiOperation("Update jobs")
-	@PostMapping(value="/api/auth/jobs/update/{id}")
-	
-	void updateJob(@PathVariable int id_j ,@PathVariable String title, @PathVariable String createdAt, @PathVariable String description, String deadline ) {
-		 jobrepo.updateJob(title, createdAt, deadline, description, id_j);
-	}
-
-}
